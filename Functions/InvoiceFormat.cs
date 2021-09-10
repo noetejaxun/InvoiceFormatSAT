@@ -8,13 +8,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace InvoiceFormatSAT
+namespace InvoiceFormatSAT.Functions
 {
     public static class InvoiceFormat
     {
         [FunctionName("InvoiceFormat")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "invoiceFormat")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "invoiceFormat")] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
