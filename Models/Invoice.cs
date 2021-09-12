@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace InvoiceFormatSAT.Models
+﻿namespace InvoiceFormatSAT.Models
 {
     class Invoice
     {
+        public TaxDocument TaxDocument { get; set; }
+        public Signature Signature { get; set; }
     }
 }
