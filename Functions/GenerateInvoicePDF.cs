@@ -16,7 +16,7 @@ namespace InvoiceFormatSAT.Functions
     {
         [FunctionName("GenerateInvoicePDF")]
         public static async Task<FileContentResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "generatePDF")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "generatePDF")] HttpRequest req,
             ILogger log)
         {
             try
@@ -27,7 +27,7 @@ namespace InvoiceFormatSAT.Functions
                 InvoicePDF invoicePDF = new InvoicePDF(invoice, log);
 
                 //return new OkObjectResult( new FileContentResult(myStrem.ToArray(), "application/pdf") { FileDownloadName = "Hola.pdf" } );
-                return (invoicePDF.getPDF());
+                return invoicePDF.getPDF();
 
             }
             catch (Exception e)

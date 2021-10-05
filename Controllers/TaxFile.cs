@@ -1,4 +1,5 @@
 ﻿using InvoiceFormatSAT.Models;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
@@ -23,8 +24,20 @@ namespace InvoiceFormatSAT.Controllers
             dynamic receiverAddress = upload.getDynamicObject(receiver, "dte:DireccionReceptor");
             dynamic Phrase          = upload.getDynamicObject(DatosEmision, "dte:Frases");
             dynamic phrases         = upload.getDynamicObject(Phrase, "dte:Frase");
+            if (phrases.GetType() == typeof(JObject))
+            {
+                JArray newArray = new JArray();
+                newArray.Add(phrases);
+                phrases = newArray;
+            }
             dynamic Item            = upload.getDynamicObject(DatosEmision, "dte:Items");
             dynamic items           = upload.getDynamicObject(Item, "dte:Item");
+            if (items.GetType() == typeof(JObject)) 
+            {
+                JArray newArray = new JArray();
+                newArray.Add(items);
+                items = newArray;
+            }
             dynamic totales         = upload.getDynamicObject(DatosEmision, "dte:Totales");
             dynamic certificacion   = upload.getDynamicObject(DTE, "dte:Certificacion");
             dynamic generalData     = upload.getDynamicObject(DatosEmision, "dte:DatosGenerales");
@@ -33,6 +46,8 @@ namespace InvoiceFormatSAT.Controllers
             Receiver receiverInfo       = getReceiver(receiver, receiverAddress);
             List<Phrases> Phrases       = getPhrases(phrases);
             List<Item> Items            = getItems(items);
+            string summary              = getSummary(Items);
+            double amount               = getAmount(Items);
             List<TaxTotal> taxTotals    = getTotals(totales);
             double grandTotal           = double.Parse(upload.getDynamicValue(totales, "dte:GranTotal"));
             Total total                 = new Total(grandTotal, taxTotals);
@@ -42,6 +57,8 @@ namespace InvoiceFormatSAT.Controllers
             taxDocument.Currency        = (string)upload.getDynamicValue(generalData, "@CodigoMoneda");
             taxDocument.Type            = (string)upload.getDynamicValue(generalData, "@Tipo");
             taxDocument.DocumentDate    = (DateTime)generalData["@FechaHoraEmision"];
+            taxDocument.Summary         = summary;
+            taxDocument.Cantidad        = amount;
             taxDocument.Issuer          = issuerInfo;
             taxDocument.Receiver        = receiverInfo;
             taxDocument.Phrases         = Phrases;
@@ -102,14 +119,17 @@ namespace InvoiceFormatSAT.Controllers
             dynamic taxes = upload.getDynamicObject(item, "dte:Impuestos");
             try
             {
-                foreach (var tax in taxes)
+                if (taxes != null)
                 {
-                    string name      = upload.getDynamicValue(tax.Value, "dte:NombreCorto");
-                    int code         = int.Parse( upload.getDynamicValue(tax.Value, "dte:CodigoUnidadGravable") );
-                    double amount    = double.Parse( upload.getDynamicValue(tax.Value, "dte:MontoGravable") );
-                    double taxAmount = double.Parse( upload.getDynamicValue(tax.Value, "dte:MontoImpuesto") );
+                    foreach (var tax in taxes)
+                    {
+                        string name      = upload.getDynamicValue(tax.Value, "dte:NombreCorto");
+                        int code         = int.Parse( upload.getDynamicValue(tax.Value, "dte:CodigoUnidadGravable") );
+                        double amount    = double.Parse( upload.getDynamicValue(tax.Value, "dte:MontoGravable") );
+                        double taxAmount = double.Parse( upload.getDynamicValue(tax.Value, "dte:MontoImpuesto") );
 
-                    Taxes.Add(new Tax(name, code, amount, taxAmount));
+                        Taxes.Add(new Tax(name, code, amount, taxAmount));
+                    }
                 }
                 return Taxes;
             }
@@ -118,6 +138,36 @@ namespace InvoiceFormatSAT.Controllers
                 return Taxes;
             }
             
+        }
+
+        public string getSummary(List<Item> Items)
+        {
+            int count = 0;
+            string summary = "";
+            foreach (Item item in Items)
+            {
+                count++;
+                if (count <= 3)
+                {
+                    summary = summary + item.Type + " - " + item.Description + "\n";
+                }
+            }
+
+            return summary;
+        }
+
+        public double getAmount(List<Item> Items)
+        {
+            double amount = 0;
+            foreach (Item item in Items)
+            {
+                if (Items.Count == 1)
+                {
+                    amount = item.Amount;
+                }
+            }
+
+            return amount;
         }
 
         public List<Item> getItems(dynamic items)
@@ -129,7 +179,7 @@ namespace InvoiceFormatSAT.Controllers
                 foreach (dynamic item in items)
                 {
                     string type = upload.getDynamicValue(item, "@BienOServicio");
-                    int line = int.Parse( upload.getDynamicValue(item, "@NumeroLinea") );
+                    int line = int.Parse(upload.getDynamicValue(item, "@NumeroLinea"));
                     double amount = double.Parse( upload.getDynamicValue(item, "dte:Cantidad") );
                     string unitOfMeasure = upload.getDynamicValue(item, "dte:UnidadMedida");
                     string description = upload.getDynamicValue(item, "dte:Descripcion");
@@ -168,12 +218,15 @@ namespace InvoiceFormatSAT.Controllers
             {
                 dynamic totalTaxes = upload.getDynamicObject(totals, "dte:TotalImpuestos");
 
-                foreach (var tax in totalTaxes)
+                if (totalTaxes != null)
                 {
-                    string name = upload.getDynamicValue(tax.Value, "@NombreCorto");
-                    double amount = double.Parse(upload.getDynamicValue(tax.Value, "@TotalMontoImpuesto"));
+                    foreach (var tax in totalTaxes)
+                    {
+                        string name = upload.getDynamicValue(tax.Value, "@NombreCorto");
+                        double amount = double.Parse(upload.getDynamicValue(tax.Value, "@TotalMontoImpuesto"));
 
-                    taxTotals.Add(new TaxTotal(name, amount));
+                        taxTotals.Add(new TaxTotal(name, amount));
+                    }
                 }
 
                 return taxTotals;
