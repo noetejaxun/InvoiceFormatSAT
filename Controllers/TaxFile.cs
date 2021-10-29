@@ -117,25 +117,80 @@ namespace InvoiceFormatSAT.Controllers
             List<Tax> Taxes = new List<Tax>();
 
             dynamic taxes = upload.getDynamicObject(item, "dte:Impuestos");
-            try
-            {
-                if (taxes != null)
-                {
-                    foreach (var tax in taxes)
-                    {
-                        string name      = upload.getDynamicValue(tax.Value, "dte:NombreCorto");
-                        int code         = int.Parse( upload.getDynamicValue(tax.Value, "dte:CodigoUnidadGravable") );
-                        double amount    = double.Parse( upload.getDynamicValue(tax.Value, "dte:MontoGravable") );
-                        double taxAmount = double.Parse( upload.getDynamicValue(tax.Value, "dte:MontoImpuesto") );
 
-                        Taxes.Add(new Tax(name, code, amount, taxAmount));
-                    }
-                }
-                return Taxes;
-            }
-            catch (Exception)
+            if (taxes.GetType() == typeof(JObject))
             {
-                return Taxes;
+                dynamic taxList = upload.getDynamicObject(taxes, "dte:Impuesto");
+
+                try
+                {
+                    if (taxList != null)
+                    {
+                        if (taxList.GetType() == typeof(JObject))
+                        {
+                            string name = upload.getDynamicValue(taxList, "dte:NombreCorto");
+                            int code = int.Parse(upload.getDynamicValue(taxList, "dte:CodigoUnidadGravable"));
+                            string textAmount = upload.getDynamicValue(taxList, "dte:MontoGravable");
+                            double amount = double.Parse(string.IsNullOrEmpty(textAmount) ? "0" : textAmount);
+                            string textTaxtAmount = upload.getDynamicValue(taxList, "dte:MontoImpuesto");
+                            double taxAmount = double.Parse(string.IsNullOrEmpty(textTaxtAmount) ? "0" : textTaxtAmount);
+                            string textGravableUnitAmount = upload.getDynamicValue(taxList, "dte:CantidadUnidadesGravables");
+                            double gravableUnitAmount = double.Parse(string.IsNullOrEmpty(textGravableUnitAmount) ? "0" : textGravableUnitAmount);
+
+                            Taxes.Add(new Tax(name, code, amount, taxAmount, gravableUnitAmount));
+                        }
+                        else
+                        {
+                            foreach (var tax in taxList)
+                            {
+                                string name = upload.getDynamicValue(tax, "dte:NombreCorto");
+                                int code = int.Parse(upload.getDynamicValue(tax, "dte:CodigoUnidadGravable"));
+                                string textAmount = upload.getDynamicValue(tax, "dte:MontoGravable");
+                                double amount = double.Parse(string.IsNullOrEmpty(textAmount) ? "0" : textAmount);
+                                string textTaxtAmount = upload.getDynamicValue(tax, "dte:MontoImpuesto");
+                                double taxAmount = double.Parse(string.IsNullOrEmpty(textTaxtAmount) ? "0" : textTaxtAmount);
+                                string textGravableUnitAmount = upload.getDynamicValue(tax, "dte:CantidadUnidadesGravables");
+                                double gravableUnitAmount = double.Parse(string.IsNullOrEmpty(textGravableUnitAmount) ? "0" : textGravableUnitAmount);
+
+                                Taxes.Add(new Tax(name, code, amount, taxAmount, gravableUnitAmount));
+                            }
+                        }
+                        
+                    }
+                    return Taxes;
+                }
+                catch (Exception)
+                {
+                    return Taxes;
+                }
+
+            } else
+            {
+
+                try
+                {
+                    if (taxes != null)
+                    {
+                        foreach (var tax in taxes)
+                        {
+                            string name = upload.getDynamicValue(tax, "dte:NombreCorto");
+                            int code = int.Parse(upload.getDynamicValue(tax, "dte:CodigoUnidadGravable"));
+                            string textAmount = upload.getDynamicValue(tax, "dte:MontoGravable");
+                            double amount = double.Parse(string.IsNullOrEmpty(textAmount) ? "0" : textAmount);
+                            string textTaxtAmount = upload.getDynamicValue(tax, "dte:MontoImpuesto");
+                            double taxAmount = double.Parse(string.IsNullOrEmpty(textTaxtAmount) ? "0" : textTaxtAmount);
+                            string textGravableUnitAmount = upload.getDynamicValue(tax, "dte:CantidadUnidadesGravables");
+                            double gravableUnitAmount = double.Parse(string.IsNullOrEmpty(textGravableUnitAmount) ? "0" : textGravableUnitAmount);
+
+                            Taxes.Add(new Tax(name, code, amount, taxAmount, gravableUnitAmount));
+                        }
+                    }
+                    return Taxes;
+                }
+                catch (Exception)
+                {
+                    return Taxes;
+                }
             }
             
         }
@@ -159,12 +214,18 @@ namespace InvoiceFormatSAT.Controllers
         public double getAmount(List<Item> Items)
         {
             double amount = 0;
-            foreach (Item item in Items)
+
+            try
             {
-                if (Items.Count == 1)
+                Item taxTotal = Items.Find(x => x.Taxes.Find(y => y.Name == "PETROLEO") != null);
+                if (taxTotal != null)
                 {
-                    amount = item.Amount;
+                    amount = taxTotal.Amount;
                 }
+            }
+            catch (Exception)
+            {
+                amount = 0;
             }
 
             return amount;
@@ -220,13 +281,42 @@ namespace InvoiceFormatSAT.Controllers
 
                 if (totalTaxes != null)
                 {
-                    foreach (var tax in totalTaxes)
+                    if (totalTaxes.GetType() == typeof(JObject))
                     {
-                        string name = upload.getDynamicValue(tax.Value, "@NombreCorto");
-                        double amount = double.Parse(upload.getDynamicValue(tax.Value, "@TotalMontoImpuesto"));
+                        dynamic taxTotal = upload.getDynamicObject(totalTaxes, "dte:TotalImpuesto");
 
-                        taxTotals.Add(new TaxTotal(name, amount));
+                        if (taxTotal.GetType() == typeof(JObject))
+                        {
+                            string name = upload.getDynamicValue(taxTotal, "@NombreCorto");
+                            string totalAmount = upload.getDynamicValue(taxTotal, "@TotalMontoImpuesto");
+                            double amount = double.Parse(string.IsNullOrEmpty(totalAmount) ? "0" : totalAmount);
+
+                            taxTotals.Add(new TaxTotal(name, amount));
+                        } else
+                        {
+                            foreach (var tax in taxTotal)
+                            {
+                                string name = upload.getDynamicValue(tax, "@NombreCorto");
+                                string totalAmount = upload.getDynamicValue(tax, "@TotalMontoImpuesto");
+                                double amount = double.Parse(string.IsNullOrEmpty(totalAmount) ? "0" : totalAmount);
+
+                                taxTotals.Add(new TaxTotal(name, amount));
+                            }
+                        }
+
                     }
+                    else
+                    {
+                        foreach (var tax in totalTaxes)
+                        {
+                            string name = upload.getDynamicValue(tax.Value, "@NombreCorto");
+                            string totalAmount = upload.getDynamicValue(tax.Value, "@TotalMontoImpuesto");
+                            double amount = double.Parse(string.IsNullOrEmpty(totalAmount) ? "0" : totalAmount);
+
+                            taxTotals.Add(new TaxTotal(name, amount));
+                        }
+                    }
+
                 }
 
                 return taxTotals;
