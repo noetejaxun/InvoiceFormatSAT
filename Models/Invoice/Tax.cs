@@ -1,7 +1,7 @@
 ﻿
 namespace InvoiceFormatSAT.Models
 {
-    class Tax
+    public class Tax
     {
         public Tax(string Name,
                    int Code,

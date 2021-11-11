@@ -1,6 +1,6 @@
 ﻿namespace InvoiceFormatSAT.Models
 {
-    class Phrases
+    public class Phrases
     {
         public Phrases (string Code, string Type)
         {

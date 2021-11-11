@@ -2,7 +2,7 @@
 
 namespace InvoiceFormatSAT.Models
 {
-    class Total
+    public class Total
     {
         public Total(double GrandTotal,
                      List<TaxTotal> TaxTotals)
