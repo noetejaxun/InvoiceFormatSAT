@@ -21,22 +21,23 @@ namespace InvoiceFormatSAT.Functions
         {
             try
             {
-                string body = await new StreamReader(req.Body).ReadToEndAsync();
-                Invoice invoice = JsonConvert.DeserializeObject<Invoice>(body);
+                /*string body = await new StreamReader(req.Body).ReadToEndAsync();
+                Invoice invoice =  JsonConvert.DeserializeObject<Invoice>(body);*/
 
-                InvoicePDF invoicePDF = new InvoicePDF(invoice, log);
+                InvoiceController invoiceController = new InvoiceController();
 
-                //return new OkObjectResult( new FileContentResult(myStrem.ToArray(), "application/pdf") { FileDownloadName = "Hola.pdf" } );
+                Invoice invoice = await invoiceController.getDTE(req);
+
+                InvoicePDFController invoicePDF = new InvoicePDFController(invoice, log);
+
                 return invoicePDF.getPDF();
 
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
-                throw;
             }
 
-            
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿
+using InvoiceFormatSAT.AddIns;
+
 namespace InvoiceFormatSAT.Models
 {
-    class Issuer : Person
+    public class Issuer : Person
     {
         public Issuer( string Code, 
                        string NIT, 
@@ -15,17 +17,17 @@ namespace InvoiceFormatSAT.Models
                        string Department,
                        string Country) {
 
-            this.Name = Name;
-            this.Email = Email;
-            this.Address = Address;
-            this.PostalCode = PostalCode;
-            this.Municipality = Municipality;
-            this.Department = Department;
-            this.Country = Country;
-            this.VATAfiliation = VATAfiliation;
-            this.Code = Code;
-            this.NIT = NIT;
-            this.TradeName = TradeName; 
+            this.Name           = Function.convertToUTF8(Name);
+            this.Email          = Email;
+            this.Address        = Function.convertToUTF8(Address);
+            this.PostalCode     = PostalCode;
+            this.Municipality   = Function.convertToUTF8(Municipality);
+            this.Department     = Function.convertToUTF8(Department);
+            this.Country        = Country;
+            this.VATAfiliation  = VATAfiliation;
+            this.Code           = Code;
+            this.NIT            = NIT;
+            this.TradeName      = Function.convertToUTF8(TradeName); 
         }
 
         public string VATAfiliation { get; set; }

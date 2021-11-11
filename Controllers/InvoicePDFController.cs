@@ -8,9 +8,9 @@ using System.IO;
 
 namespace InvoiceFormatSAT.Controllers
 {
-    class InvoicePDF
+    class InvoicePDFController
     {
-        public InvoicePDF(Invoice invoice, ILogger logs)
+        public InvoicePDFController(Invoice invoice, ILogger logs)
         {
             this.invoice = invoice;
             this.logs = logs;
@@ -32,21 +32,18 @@ namespace InvoiceFormatSAT.Controllers
             tableBuilder.AddColumnPercentToTable("Línea", 5)
                         .AddColumnPercentToTable("Descripción", 35)
                         .AddColumnPercentToTable("Cantidad", 8)
-                        //.AddColumnPercentToTable("Unidad de medida", 8)
                         .AddColumnPercentToTable("Precio Unitario", 13)
                         .AddColumnPercentToTable("Precio", 13)
                         .AddColumnPercentToTable("Descuento", 13)
                         .AddColumnPercentToTable("Total", 13)
                         .SetHeaderRowStyleBackColor(primaryColor)
                         .SetHeaderRowStyleFont(font)
-                        //.SetAltRowStyleMinHeight()
                         .SetHeaderRowStyleMinHeight(new XUnit(15f))
                         .SetHeaderRowBorderColor(primaryColor);
 
-            foreach (Item item in invoice.TaxDocument.Items)
+            foreach (Item item in invoice.DTE.Items)
             {
                 tableBuilder.AddRow(rowBuilder => {
-                    //rowBuilder.AddCellToRow(item.Type);
                     rowBuilder.AddCell(item.Line.ToString())
                       .SetHorizontalAlignment(HorizontalAlignment.Center)
                       .SetPadding(2f);
@@ -55,9 +52,6 @@ namespace InvoiceFormatSAT.Controllers
                     rowBuilder.AddCell(item.Amount.ToString())
                       .SetHorizontalAlignment(HorizontalAlignment.Center)
                       .SetPadding(2f);
-                    //rowBuilder.AddCell(item.UnitOfMeasure)
-                    //  .SetHorizontalAlignment(HorizontalAlignment.Center)
-                    //  .SetPadding(2f);
                     rowBuilder.AddCell(formatAmount(item.UnitPrice))
                       .SetHorizontalAlignment(HorizontalAlignment.Right)
                       .SetPadding(2f);
@@ -71,7 +65,6 @@ namespace InvoiceFormatSAT.Controllers
                       .SetHorizontalAlignment(HorizontalAlignment.Right)
                       .SetPadding(2f);
 
-                    //rowBuilder.ApplyStyle(style);
                     rowBuilder.SetBorderColor(Color.Gray, Color.White, Color.Gray, Color.White);
 
                     if (item.Line % 2 == 0)
@@ -87,7 +80,6 @@ namespace InvoiceFormatSAT.Controllers
                 footerBuilder.AddCellToRow("");
                 footerBuilder.AddCellToRow("");
                 footerBuilder.AddCellToRow("");
-                //footerBuilder.AddCellToRow("");
                 footerBuilder.AddCellToRow("");
                 footerBuilder.AddCellToRow("");
                 footerBuilder.AddCellToRow("");
@@ -119,7 +111,6 @@ namespace InvoiceFormatSAT.Controllers
 
 
             sectionBuilder.AddTable(tableBuilder => { tableBuilder = getItems(tableBuilder, headerFont); }).ToSection();
-
 
 
             sectionBuilder.ToDocument();

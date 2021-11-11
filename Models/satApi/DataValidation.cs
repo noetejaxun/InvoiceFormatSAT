@@ -2,7 +2,7 @@
 
 namespace InvoiceFormatSAT.Models.satApi
 {
-    internal class DataValidation : IQuery
+    public class DataValidation : IQuery
     {
         public string autorizacion { get; set; }
         public string emisor { get; set; }

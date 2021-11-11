@@ -2,7 +2,7 @@
 
 namespace InvoiceFormatSAT.Models
 {
-    class Certification
+    public class Certification
     {
         public string CertifierNIT { get; set; }
         public string CertifierName { get; set; }

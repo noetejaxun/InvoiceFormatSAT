@@ -1,6 +1,6 @@
 ﻿namespace InvoiceFormatSAT.Models
 {
-    class TaxTotal
+    public class TaxTotal
     {
         public TaxTotal(string Name, double Amount)
         {

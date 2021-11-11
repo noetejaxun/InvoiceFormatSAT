@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using InvoiceFormatSAT.AddIns;
+using System.Collections.Generic;
 
 namespace InvoiceFormatSAT.Models
 {
-    class Item
+    public class Item
     {
         public Item(string Type,
                     int Line,
@@ -20,7 +21,7 @@ namespace InvoiceFormatSAT.Models
             this.Line = Line;
             this.Amount = Amount;
             this.UnitOfMeasure = UnitOfMeasure;
-            this.Description = Description;
+            this.Description = Function.convertToUTF8(Description);
             this.UnitPrice = UnitPrice;
             this.Price = Price;
             this.Discount = Discount;
@@ -37,5 +38,6 @@ namespace InvoiceFormatSAT.Models
         public double Discount { get; set; }
         public double Total { get; set; }
         public List<Tax> Taxes { get; set; }
+
     }
 }
