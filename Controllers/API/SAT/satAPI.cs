@@ -1,5 +1,6 @@
 ﻿using InvoiceFormatSAT.Models.satApi;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Threading.Tasks;
 
@@ -36,8 +37,10 @@ namespace InvoiceFormatSAT.Controllers.API.SAT
                 "https://felav02.c.sat.gob.gt/verificador-rest/rest/publico/consultaDatosValidacion",
                 JsonConvert.SerializeObject(xmlQuery),
                 "application/json");
+            var format = "dd/MM/yyyy HH:mm:ss";
+            var dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = format };
 
-            ResponseValidation validationData = JsonConvert.DeserializeObject<ResponseValidation>(response);
+            ResponseValidation validationData = JsonConvert.DeserializeObject<ResponseValidation>(response, dateTimeConverter);
 
             return validationData;
         }

@@ -47,8 +47,9 @@ namespace InvoiceFormatSAT.Controllers
                 }
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine(e.Message);
                 invoice.DTE.HasError = true;
             }
 
