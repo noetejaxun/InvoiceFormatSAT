@@ -10,7 +10,7 @@ namespace InvoiceFormatSAT.Models.satApi
         public string receptor { get; set; }
         public double monto { get; set; }
         public string moneda { get; set; }
-        public DateTime fechaHoraConsulta { get; set; }
+        public string fechaHoraConsulta { get; set; }
         public string estado { get; set; }
     }
 }

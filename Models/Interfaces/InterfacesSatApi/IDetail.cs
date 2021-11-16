@@ -19,7 +19,7 @@ namespace InvoiceFormatSAT.Models.Interfaces.InterfacesSatApi
         public string moneda { get; set; }
         public string numeroDocumento { get; set; }
         public bool existeDte { get; set; }
-        public DateTime fechaHoraConsulta { get; set; }
+        public string fechaHoraConsulta { get; set; }
         public bool exportacion { get; set; }
         public string fechaHoraAnulacion { get; set; }
         public string TIPO { get; set; }
