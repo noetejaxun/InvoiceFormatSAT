@@ -383,7 +383,7 @@ namespace InvoiceFormatSAT.Controllers
                                               line,
                                               amount,
                                               unitOfMeasure,
-                                              description,
+                                              description.Trim(),
                                               unitPrice / exchangeRate.PurchaseValue,
                                               price / exchangeRate.PurchaseValue,
                                               discount / exchangeRate.PurchaseValue,
