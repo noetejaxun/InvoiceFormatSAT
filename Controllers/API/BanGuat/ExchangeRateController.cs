@@ -105,8 +105,8 @@ namespace InvoiceFormatSAT.Controllers.API.BanGuat
 
             int moneda      = Function.getIntValue(Var, "moneda");
             string fecha    = Function.getStringValue(Var, "fecha");
-            dynamic venta   = Function.getDoubleValue(Var, "venta");
-            dynamic compra  = Function.getDoubleValue(Var, "compra");
+            double venta   = Function.getDoubleValue(Var, "venta");
+            double compra  = Function.getDoubleValue(Var, "compra");
             string[] splitedDate = fecha.Split('/');
 
             if (compra == 0 || venta == 0)

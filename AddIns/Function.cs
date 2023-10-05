@@ -1,6 +1,7 @@
 ﻿
 using Newtonsoft.Json;
 using System;
+using System.Globalization;
 using System.Web;
 using System.Xml;
 
@@ -63,7 +64,7 @@ namespace InvoiceFormatSAT.AddIns
         {
             try {
                 string value = getStringValue(obj, property);
-                return double.Parse(string.IsNullOrEmpty(value) ? "0" : value);
+                return double.Parse(string.IsNullOrEmpty(value) ? "0" : value, CultureInfo.InvariantCulture);
             } catch (Exception) {
                 return 0;
             }
